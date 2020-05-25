@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" output="target/classes" path="src/main/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/ws/java/lib/univocity-parsers-2.1.1.jar"/>
+	<classpathentry kind="lib" path="C:/ws/java/lib/jackson-datatype-guava-2.10.2-javadoc.jar"/>
+	<classpathentry kind="lib" path="C:/ws/java/lib/guava-19.0-javadoc.jar"/>
+	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
+		<attributes>
+			<attribute name="test" value="true"/>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/ws/java/lib/mysql-connector-java-8.0.19.jar"/>
+	<classpathentry kind="lib" path="C:/ws/java/lib/amazon-mws-v20090101-java-2016-09-21.zip"/>
+	<classpathentry kind="lib" path="C:/ws/java/lib/MWSOrdersJavaClientLibrary-2013-09-01.zip"/>
+	<classpathentry kind="lib" path="C:/ws/java/lib/MWSClientJavaRuntime-1.0.jar"/>
+	<classpathentry kind="lib" path="C:/ws/java/lib/MWSProducts_2011-10-01_v2017-03-22.jar"/>
+	<classpathentry kind="output" path="target/classes"/>
+</classpath>
