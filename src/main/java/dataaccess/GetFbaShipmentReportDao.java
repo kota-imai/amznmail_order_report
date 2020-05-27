@@ -1,4 +1,5 @@
 package dataaccess;
+
 import java.util.ArrayList;
 
 /*
@@ -40,107 +41,95 @@ import com.amazonaws.services.dynamodbv2.model.UpdateItemResult;
 import config.SystemConfig;
 import util.UtilityTools;
 
-//import util.ListOrdersXMLToMap;
-
-/**
- * This sample demonstrates how to perform a few simple operations with the
- * Amazon DynamoDB service.
- */
 public class GetFbaShipmentReportDao {
 
-    static AmazonDynamoDB dynamoDB;
-    
-    //syokika
-    private static void init() throws Exception {
+	static AmazonDynamoDB dynamoDB;
 
-        ProfileCredentialsProvider credentialsProvider = new ProfileCredentialsProvider();
-        try {
-            credentialsProvider.getCredentials();
-        } catch (Exception e) {
-            throw new AmazonClientException(
-                    "Cannot load the credentials from the credential profiles file. " +
-                    "Please make sure that your credentials file is at the correct " +
-                    "location (C:\\Users\\kima0\\.aws\\credentials), and is in valid format.",
-                    e);
-        }
-        dynamoDB = AmazonDynamoDBClientBuilder.standard()
-            .withCredentials(credentialsProvider)
-            .withRegion(SystemConfig.getRegionProd())
-            .build();
-    }
-    
-    public List<Map<String, AttributeValue>> scanGeneratedId(String sellerId) throws Exception {
-    	List<Map<String, AttributeValue>> idList = new ArrayList<Map<String, AttributeValue>>();
-    	init();
-    	try {
-            // Scan items
-        	String tableName = "GeneratedId";
-        	HashMap<String, Condition> scanFilter = new HashMap<String, Condition>();
-        	Condition condition1 = new Condition()
-        			.withComparisonOperator(ComparisonOperator.EQ.toString())
-        			.withAttributeValueList(new AttributeValue(sellerId));
-            Condition condition2 = new Condition()
-                	.withComparisonOperator(ComparisonOperator.EQ.toString())
-                	.withAttributeValueList(new AttributeValue().withN("0"));
-            scanFilter.put("SellerId", condition1);
-        	scanFilter.put("NotIssued", condition2);
-        	
-        	ScanRequest scanRequest = new ScanRequest(tableName).withScanFilter(scanFilter);
-        	ScanResult scanResult = dynamoDB.scan(scanRequest);
-        	
-        	idList = scanResult.getItems();
-//System.out.println(idList);
-    	} catch (AmazonServiceException ase) {
-    		System.out.println("Caught an AmazonServiceException, which means your request made it "
-    				+ "to AWS, but was rejected with an error response for some reason.");
-    		System.out.println("Error Message:    " + ase.getMessage());
-    		System.out.println("HTTP Status Code: " + ase.getStatusCode());
-    		System.out.println("AWS Error Code:   " + ase.getErrorCode());
-    		System.out.println("Error Type:       " + ase.getErrorType());
-    		System.out.println("Request ID:       " + ase.getRequestId());
-    	} catch (AmazonClientException ace) {
-    		System.out.println("Caught an AmazonClientException, which means the client encountered "
-    				+ "a serious internal problem while trying to communicate with AWS, "
-    				+ "such as not being able to access the network.");
-    		System.out.println("Error Message: " + ace.getMessage());
-    	}
-    	return idList;
-    }
-    
-    public List<Map<String, AttributeValue>> scanRequestIdWithSellerId(String sellerId) throws Exception {
-    	List<Map<String, AttributeValue>> idList = new ArrayList<Map<String, AttributeValue>>();
-    	init();
-    	try {
-            // Scan items
-        	String tableName = "RequestId";
-        	HashMap<String, Condition> scanFilter = new HashMap<String, Condition>();
-        	Condition condition = new Condition()
-              .withComparisonOperator(ComparisonOperator.EQ.toString())
-        	  .withAttributeValueList(new AttributeValue(sellerId));
-        	scanFilter.put("SellerId", condition);
-        	
-        	ScanRequest scanRequest = new ScanRequest(tableName).withScanFilter(scanFilter);
-        	ScanResult scanResult = dynamoDB.scan(scanRequest);
-        	
-        	idList = scanResult.getItems();
-//System.out.println(idList);
-    	} catch (AmazonServiceException ase) {
-    		System.out.println("Caught an AmazonServiceException, which means your request made it "
-    				+ "to AWS, but was rejected with an error response for some reason.");
-    		System.out.println("Error Message:    " + ase.getMessage());
-    		System.out.println("HTTP Status Code: " + ase.getStatusCode());
-    		System.out.println("AWS Error Code:   " + ase.getErrorCode());
-    		System.out.println("Error Type:       " + ase.getErrorType());
-    		System.out.println("Request ID:       " + ase.getRequestId());
-    	} catch (AmazonClientException ace) {
-    		System.out.println("Caught an AmazonClientException, which means the client encountered "
-    				+ "a serious internal problem while trying to communicate with AWS, "
-    				+ "such as not being able to access the network.");
-    		System.out.println("Error Message: " + ace.getMessage());
-    	}
-    	return idList;
-    }
+	// Initializer
+	private static void init() throws Exception {
 
+		ProfileCredentialsProvider credentialsProvider = new ProfileCredentialsProvider();
+		try {
+			credentialsProvider.getCredentials();
+		} catch (Exception e) {
+			throw new AmazonClientException("Cannot load the credentials from the credential profiles file. "
+					+ "Please make sure that your credentials file is at the correct "
+					+ "location (C:\\Users\\kima0\\.aws\\credentials), and is in valid format.", e);
+		}
+		dynamoDB = AmazonDynamoDBClientBuilder.standard().withCredentials(credentialsProvider)
+				.withRegion(SystemConfig.getRegionProd()).build();
+	}
+	
+	// 未発行のレポートIDを検索する
+	public List<Map<String, AttributeValue>> scanGeneratedId(String sellerId) throws Exception {
+		List<Map<String, AttributeValue>> idList = new ArrayList<Map<String, AttributeValue>>();
+		init(); // Initialize
+		try {
+			String tableName = "GeneratedId";
+			HashMap<String, Condition> scanFilter = new HashMap<String, Condition>();
+			Condition condition1 = new Condition().withComparisonOperator(ComparisonOperator.EQ.toString())
+					.withAttributeValueList(new AttributeValue(sellerId));
+			Condition condition2 = new Condition().withComparisonOperator(ComparisonOperator.EQ.toString())
+					.withAttributeValueList(new AttributeValue().withN("0"));
+			scanFilter.put("SellerId", condition1);
+			scanFilter.put("NotIssued", condition2);
+
+			ScanRequest scanRequest = new ScanRequest(tableName).withScanFilter(scanFilter);
+			ScanResult scanResult = dynamoDB.scan(scanRequest);
+
+			idList = scanResult.getItems();
+
+		} catch (AmazonServiceException ase) {
+			System.out.println("Caught an AmazonServiceException, which means your request made it "
+					+ "to AWS, but was rejected with an error response for some reason.");
+			System.out.println("Error Message:    " + ase.getMessage());
+			System.out.println("HTTP Status Code: " + ase.getStatusCode());
+			System.out.println("AWS Error Code:   " + ase.getErrorCode());
+			System.out.println("Error Type:       " + ase.getErrorType());
+			System.out.println("Request ID:       " + ase.getRequestId());
+		} catch (AmazonClientException ace) {
+			System.out.println("Caught an AmazonClientException, which means the client encountered "
+					+ "a serious internal problem while trying to communicate with AWS, "
+					+ "such as not being able to access the network.");
+			System.out.println("Error Message: " + ace.getMessage());
+		}
+		return idList;
+	}
+
+	public List<Map<String, AttributeValue>> scanRequestIdWithSellerId(String sellerId) throws Exception {
+		List<Map<String, AttributeValue>> idList = new ArrayList<Map<String, AttributeValue>>();
+		init();
+		try {
+			// アクティブなリクエストIDがあるか検索
+			String tableName = "RequestId";
+			HashMap<String, Condition> scanFilter = new HashMap<String, Condition>();
+			Condition condition = new Condition().withComparisonOperator(ComparisonOperator.EQ.toString())
+					.withAttributeValueList(new AttributeValue(sellerId));
+			scanFilter.put("SellerId", condition);
+
+			ScanRequest scanRequest = new ScanRequest(tableName).withScanFilter(scanFilter);
+			ScanResult scanResult = dynamoDB.scan(scanRequest);
+
+			idList = scanResult.getItems();
+			
+		} catch (AmazonServiceException ase) {
+			System.out.println("Caught an AmazonServiceException, which means your request made it "
+					+ "to AWS, but was rejected with an error response for some reason.");
+			System.out.println("Error Message:    " + ase.getMessage());
+			System.out.println("HTTP Status Code: " + ase.getStatusCode());
+			System.out.println("AWS Error Code:   " + ase.getErrorCode());
+			System.out.println("Error Type:       " + ase.getErrorType());
+			System.out.println("Request ID:       " + ase.getRequestId());
+		} catch (AmazonClientException ace) {
+			System.out.println("Caught an AmazonClientException, which means the client encountered "
+					+ "a serious internal problem while trying to communicate with AWS, "
+					+ "such as not being able to access the network.");
+			System.out.println("Error Message: " + ace.getMessage());
+		}
+		return idList;
+	}
+	
+	// 出荷情報を保存する
     public void saveShipmentInfo(String sellerId, List<String[]> items) throws Exception {
     	String tableName = "Ship";
     	init();
@@ -263,7 +252,8 @@ public class GetFbaShipmentReportDao {
             System.out.println("Error Message: " + ace.getMessage());
         }
 	}
-
+    
+    // Item定義用
     private static Map<String, AttributeValue> newItem(
             String amazon_order_id,
             String merchant_order_id,
@@ -371,7 +361,7 @@ public class GetFbaShipmentReportDao {
             return item;
 	}
 
-
+    // 発行済みフラグを反転する
     public void updateIssuedFlg(String generatedId) throws Exception {
         init();
         try {

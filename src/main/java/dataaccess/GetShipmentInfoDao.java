@@ -37,44 +37,12 @@ import com.amazonaws.services.dynamodbv2.model.UpdateItemResult;
 import config.SystemConfig;
 import util.UtilityTools;
 
-/**
- * This sample demonstrates how to perform a few simple operations with the
- * Amazon DynamoDB service.
- */
 public class GetShipmentInfoDao {
-
-    /*
-     * Before running the code:
-     *      Fill in your AWS access credentials in the provided credentials
-     *      file template, and be sure to move the file to the default location
-     *      (C:\\Users\\kima0\\.aws\\credentials) where the sample code will load the
-     *      credentials from.
-     *      https://console.aws.amazon.com/iam/home?#security_credential
-     *
-     * WARNING:
-     *      To avoid accidental leakage of your credentials, DO NOT keep
-     *      the credentials file in your source directory.
-     */
 
     static AmazonDynamoDB dynamoDB;
 
-    /**
-     * The only information needed to create a client are security credentials
-     * consisting of the AWS Access Key ID and Secret Access Key. All other
-     * configuration, such as the service endpoints, are performed
-     * automatically. Client parameters, such as proxies, can be specified in an
-     * optional ClientConfiguration object when constructing a client.
-     *
-     * @see com.amazonaws.auth.BasicAWSCredentials
-     * @see com.amazonaws.auth.ProfilesConfigFile
-     * @see com.amazonaws.ClientConfiguration
-     */
+    // Initializer
     private static void init() throws Exception {
-        /*
-         * The ProfileCredentialsProvider will return your [default]
-         * credential profile by reading from the credentials file located at
-         * (C:\\Users\\kima0\\.aws\\credentials).
-         */
         ProfileCredentialsProvider credentialsProvider = new ProfileCredentialsProvider();
         try {
             credentialsProvider.getCredentials();
@@ -93,11 +61,10 @@ public class GetShipmentInfoDao {
 
     public static List<Map<String, AttributeValue>> getInfo(String sellerid) throws Exception {
     	List<Map<String, AttributeValue>> items = new ArrayList<Map<String, AttributeValue>>();
-        init();
+        init(); // Initialize
         try {
             String tableName = "Ship";
 
-            // Scan items for movies with a year attribute greater than 1985
             HashMap<String, Condition> scanFilter = new HashMap<String, Condition>();
             Condition condition1 = new Condition()
                 .withComparisonOperator(ComparisonOperator.EQ.toString())
@@ -133,7 +100,6 @@ public class GetShipmentInfoDao {
         init();
         try {
             String tableName = "Ship";
-            // sellerId sort
             HashMap<String, Condition> scanFilter = new HashMap<String, Condition>();
             Condition condition1 = new Condition()
                 .withComparisonOperator(ComparisonOperator.EQ.toString())

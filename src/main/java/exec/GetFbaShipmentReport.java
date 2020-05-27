@@ -9,7 +9,7 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 
 import config.SystemConfig;
 import dataaccess.GetFbaShipmentReportDao;
-import util.FbaShipmentReportTsvPerser;
+import util.TsvPerser;
 import util.UtilityTools;
 
 public class GetFbaShipmentReport {
@@ -26,7 +26,7 @@ public class GetFbaShipmentReport {
 		//Save Order Info in database
 		if (generatedIdList.size()>0) {
 			GetReportSample sample = new GetReportSample();
-			FbaShipmentReportTsvPerser parser = new FbaShipmentReportTsvPerser();
+			TsvPerser parser = new TsvPerser();
 			for (int i = 0 ;i<generatedIdList.size() ;i++) {
 				String generatedReportId = generatedIdList.get(i).get("GeneratedReportId").getS();//generatedId取得
 				List<String[]> itemList = null;

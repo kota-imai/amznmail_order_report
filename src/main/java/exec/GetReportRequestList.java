@@ -15,41 +15,42 @@ public class GetReportRequestList {
 
 	public static void main(String[] args) {
 		GetReportRequestListDao dao = new GetReportRequestListDao();
-		final String SELLER_ID = SystemConfig.getSellerId(); //DB取得に変更する
+		
+		final String SELLER_ID = SystemConfig.getSellerId(); // TODO DB取得に変更する
 		final String MWS_AUTH_TOKEN = SystemConfig.getMwsAuthToken(); //
 		
 		List<String> ReportIdList = new ArrayList<String>();
 		List<Map<String, AttributeValue>> resultmap = new ArrayList<Map<String, AttributeValue>>();
 		
-		//Get ReportIds from dynamoDB
+		// レポートID未発行の要求IDを検索する
 		try {
 			resultmap = dao.scanRequestIdWithSellerId(SELLER_ID);
 			for(int i = 0; i < resultmap.size(); i++) {
 				ReportIdList.add(resultmap.get(i).get("ReportRequestId").getS());
 			}
 			System.out.println("ReportIdList : "+ ReportIdList);
-			resultmap.clear();//release memory
+			resultmap.clear();
 		} catch (NullPointerException nex) {
 			System.out.println("NODATA FOUND WITH GIVEN QUERY");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		//End the process if there is no active RequestId 
-		if (ReportIdList.isEmpty()) {
-			System.out.println("No requestId are there in the table");
+		if (ReportIdList.isEmpty()) { // 対象の要求IDがなかったらログ出力して終了
+			System.out.println("There are No requestId in the table");
 			return;
-		}
-		
-		//API Call
-		GetReportRequestListSample sample = new GetReportRequestListSample();
-		Map<String, Map<String, String>> map = sample.sendRequest(ReportIdList, SELLER_ID, MWS_AUTH_TOKEN);
-
-		try {
-			dao.saveGeneratedId(ReportIdList, map, SELLER_ID);
-		} catch (Exception e) {
-			System.out.println("***Failed to save generatedIds in DynamoDB***");
-			e.printStackTrace();
+		} else { // 対象のデータがあれば
+			// MWS_APIをコールする
+			GetReportRequestListSample sample = new GetReportRequestListSample();
+			Map<String, Map<String, String>> map = sample.sendRequest(ReportIdList, SELLER_ID, MWS_AUTH_TOKEN);
+			
+			// レポートIDを保存する
+			try {
+				dao.saveGeneratedId(ReportIdList, map, SELLER_ID);
+			} catch (Exception e) {
+				System.out.println("***Failed to save generatedIds in DynamoDB***");
+				e.printStackTrace();
+			}
 		}
 	}
 }
