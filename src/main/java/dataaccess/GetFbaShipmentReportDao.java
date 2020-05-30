@@ -1,74 +1,38 @@
 package dataaccess;
 
 import java.util.ArrayList;
-
-/*
- * Copyright 2012-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * A copy of the License is located at
- *
- *  http://aws.amazon.com/apache2.0
- *
- * or in the "license" file accompanying this file. This file is distributed
- * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- */
 import java.util.HashMap;
-
 import java.util.List;
 import java.util.Map;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
-import com.amazonaws.auth.profile.ProfileCredentialsProvider;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.model.AttributeAction;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.AttributeValueUpdate;
 import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 import com.amazonaws.services.dynamodbv2.model.Condition;
 import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
-import com.amazonaws.services.dynamodbv2.model.PutItemResult;
 import com.amazonaws.services.dynamodbv2.model.ScanRequest;
 import com.amazonaws.services.dynamodbv2.model.ScanResult;
 import com.amazonaws.services.dynamodbv2.model.UpdateItemRequest;
 import com.amazonaws.services.dynamodbv2.model.UpdateItemResult;
 
-import config.SystemConfig;
 import util.UtilityTools;
 
-public class GetFbaShipmentReportDao {
-
-	static AmazonDynamoDB dynamoDB;
-
-	// Initializer
-	private static void init() throws Exception {
-
-		ProfileCredentialsProvider credentialsProvider = new ProfileCredentialsProvider();
-		try {
-			credentialsProvider.getCredentials();
-		} catch (Exception e) {
-			throw new AmazonClientException("Cannot load the credentials from the credential profiles file. "
-					+ "Please make sure that your credentials file is at the correct "
-					+ "location (C:\\Users\\kima0\\.aws\\credentials), and is in valid format.", e);
-		}
-		dynamoDB = AmazonDynamoDBClientBuilder.standard().withCredentials(credentialsProvider)
-				.withRegion(SystemConfig.getRegionProd()).build();
-	}
+public class GetFbaShipmentReportDao extends DynamoDbDao {
 	
 	// 未発行のレポートIDを検索する
 	public List<Map<String, AttributeValue>> scanGeneratedId(String sellerId) throws Exception {
 		List<Map<String, AttributeValue>> idList = new ArrayList<Map<String, AttributeValue>>();
-		init(); // Initialize
+		super.init(); // 初期化
 		try {
 			String tableName = "GeneratedId";
 			HashMap<String, Condition> scanFilter = new HashMap<String, Condition>();
+			// 条件1 出品者IDがぉなじ
 			Condition condition1 = new Condition().withComparisonOperator(ComparisonOperator.EQ.toString())
 					.withAttributeValueList(new AttributeValue(sellerId));
+			// 条件2 発行済みステータスが0（未発行）
 			Condition condition2 = new Condition().withComparisonOperator(ComparisonOperator.EQ.toString())
 					.withAttributeValueList(new AttributeValue().withN("0"));
 			scanFilter.put("SellerId", condition1);
@@ -80,25 +44,16 @@ public class GetFbaShipmentReportDao {
 			idList = scanResult.getItems();
 
 		} catch (AmazonServiceException ase) {
-			System.out.println("Caught an AmazonServiceException, which means your request made it "
-					+ "to AWS, but was rejected with an error response for some reason.");
-			System.out.println("Error Message:    " + ase.getMessage());
-			System.out.println("HTTP Status Code: " + ase.getStatusCode());
-			System.out.println("AWS Error Code:   " + ase.getErrorCode());
-			System.out.println("Error Type:       " + ase.getErrorType());
-			System.out.println("Request ID:       " + ase.getRequestId());
+			super.LoggerAmazonServiceException(ase);
 		} catch (AmazonClientException ace) {
-			System.out.println("Caught an AmazonClientException, which means the client encountered "
-					+ "a serious internal problem while trying to communicate with AWS, "
-					+ "such as not being able to access the network.");
-			System.out.println("Error Message: " + ace.getMessage());
+			super.LoggerAmazonClientException(ace);
 		}
 		return idList;
 	}
 
 	public List<Map<String, AttributeValue>> scanRequestIdWithSellerId(String sellerId) throws Exception {
 		List<Map<String, AttributeValue>> idList = new ArrayList<Map<String, AttributeValue>>();
-		init();
+		super.init(); // 初期化
 		try {
 			// アクティブなリクエストIDがあるか検索
 			String tableName = "RequestId";
@@ -113,26 +68,16 @@ public class GetFbaShipmentReportDao {
 			idList = scanResult.getItems();
 			
 		} catch (AmazonServiceException ase) {
-			System.out.println("Caught an AmazonServiceException, which means your request made it "
-					+ "to AWS, but was rejected with an error response for some reason.");
-			System.out.println("Error Message:    " + ase.getMessage());
-			System.out.println("HTTP Status Code: " + ase.getStatusCode());
-			System.out.println("AWS Error Code:   " + ase.getErrorCode());
-			System.out.println("Error Type:       " + ase.getErrorType());
-			System.out.println("Request ID:       " + ase.getRequestId());
+			super.LoggerAmazonServiceException(ase);
 		} catch (AmazonClientException ace) {
-			System.out.println("Caught an AmazonClientException, which means the client encountered "
-					+ "a serious internal problem while trying to communicate with AWS, "
-					+ "such as not being able to access the network.");
-			System.out.println("Error Message: " + ace.getMessage());
-		}
+			super.LoggerAmazonClientException(ace);		}
 		return idList;
 	}
 	
 	// 出荷情報を保存する
     public void saveShipmentInfo(String sellerId, List<String[]> items) throws Exception {
     	String tableName = "Ship";
-    	init();
+    	super.init(); // 初期化
     	try {
     		for (int i = 0 ;i<items.size() ;i++) {
     			String amazon_order_id = null;try{amazon_order_id = items.get(i)[0];} catch(NullPointerException e) {amazon_order_id = "";}
@@ -235,22 +180,13 @@ public class GetFbaShipmentReportDao {
             			sales_channel,
             			seller_id);
             	PutItemRequest putItemRequest = new PutItemRequest(tableName, item);
-            	PutItemResult putItemResult = dynamoDB.putItem(putItemRequest);
+            	dynamoDB.putItem(putItemRequest);
         	}
-        } catch (AmazonServiceException ase) {
-            System.out.println("Caught an AmazonServiceException, which means your request made it "
-                    + "to AWS, but was rejected with an error response for some reason.");
-            System.out.println("Error Message:    " + ase.getMessage());
-            System.out.println("HTTP Status Code: " + ase.getStatusCode());
-            System.out.println("AWS Error Code:   " + ase.getErrorCode());
-            System.out.println("Error Type:       " + ase.getErrorType());
-            System.out.println("Request ID:       " + ase.getRequestId());
-        } catch (AmazonClientException ace) {
-            System.out.println("Caught an AmazonClientException, which means the client encountered "
-                    + "a serious internal problem while trying to communicate with AWS, "
-                    + "such as not being able to access the network.");
-            System.out.println("Error Message: " + ace.getMessage());
-        }
+		} catch (AmazonServiceException ase) {
+			super.LoggerAmazonServiceException(ase);
+		} catch (AmazonClientException ace) {
+			super.LoggerAmazonClientException(ace);
+		}
 	}
     
     // Item定義用
@@ -363,13 +299,14 @@ public class GetFbaShipmentReportDao {
 
     // 発行済みフラグを反転する
     public void updateIssuedFlg(String generatedId) throws Exception {
-        init();
+        super.init(); // 初期化
         try {
             String tableName = "GeneratedId";
             
-            // Update an item
+            // アイテム更新
             Map<String, AttributeValueUpdate> item = new HashMap<String, AttributeValueUpdate>();
             Map<String, AttributeValue> key = new HashMap<String, AttributeValue>();
+            // 発行済みフラグ
             int already_issued = 1;
             key.put("GeneratedReportId", new AttributeValue().withS(generatedId));
             item.put("NotIssued", 
@@ -388,19 +325,10 @@ public class GetFbaShipmentReportDao {
             UpdateItemResult result = dynamoDB.updateItem(updateItemRequest);
             System.out.println("Result: " + result);
 
-        } catch (AmazonServiceException ase) {
-            System.out.println("Caught an AmazonServiceException, which means your request made it "
-                    + "to AWS, but was rejected with an error response for some reason.");
-            System.out.println("Error Message:    " + ase.getMessage());
-            System.out.println("HTTP Status Code: " + ase.getStatusCode());
-            System.out.println("AWS Error Code:   " + ase.getErrorCode());
-            System.out.println("Error Type:       " + ase.getErrorType());
-            System.out.println("Request ID:       " + ase.getRequestId());
-        } catch (AmazonClientException ace) {
-            System.out.println("Caught an AmazonClientException, which means the client encountered "
-                    + "a serious internal problem while trying to communicate with AWS, "
-                    + "such as not being able to access the network.");
-            System.out.println("Error Message: " + ace.getMessage());
-        }
+		} catch (AmazonServiceException ase) {
+			super.LoggerAmazonServiceException(ase);
+		} catch (AmazonClientException ace) {
+			super.LoggerAmazonClientException(ace);
+		}
     }
 }

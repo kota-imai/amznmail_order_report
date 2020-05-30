@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-//MySqlコネクション切断用クラス
+//DBコネクション切断用クラス
 public class Closer {
 
 	public void closeConnection(Connection conn, PreparedStatement ps, ResultSet rs) {

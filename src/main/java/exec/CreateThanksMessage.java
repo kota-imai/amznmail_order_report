@@ -21,7 +21,8 @@ public class CreateThanksMessage {
 
 		// ユーザIDごとの注文情報を取得、なければおわり
 		try {
-			itemList = GetShipmentInfoDao.getInfoThanx(SELLER_ID);
+			GetShipmentInfoDao dao = new GetShipmentInfoDao();
+			itemList = dao.getInfoThanx(SELLER_ID);
 			System.out.println(itemList);
 		} catch (Exception e) {
 			e.printStackTrace();

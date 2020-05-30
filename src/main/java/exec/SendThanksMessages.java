@@ -5,15 +5,14 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import com.amazonaws.samples.AmazonSESSample;
-
+import aws.AmazonSesMailer;
 import config.SystemConfig;
 import dataaccess.SendMessagesDao;
 
 public class SendThanksMessages {
 
 	public static void main(String[] args) {
-		AmazonSESSample mailer = new AmazonSESSample();
+		AmazonSesMailer mailer = new AmazonSesMailer();
 		SendMessagesDao dao = new SendMessagesDao();
 		String seller_id = SystemConfig.getSellerId(); // TODO
 
