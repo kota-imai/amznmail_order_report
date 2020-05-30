@@ -32,7 +32,7 @@ public class SendThanksMessages {
 			for (int i = 0; i < mailList.size(); i++) {
 				String orderId = mailList.get(i).get("OrderId");
 				String from = mailList.get(i).get("From_Email");
-				// String to = mailList.get(i).get("To_Email"); TODO
+				// String to = mailList.get(i).get("To_Email");
 				String to = "k.ima003365@gmail.com";
 				String configSet = mailList.get(i).get("ConfigSet");
 				String subject = mailList.get(i).get("Subject");

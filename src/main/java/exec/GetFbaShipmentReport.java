@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.amazonaws.mws.samples.GetReportSample;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 
 import config.SystemConfig;
 import dataaccess.GetFbaShipmentReportDao;
+import mwssamples.GetReportSample;
 import util.TsvPerser;
 import util.UtilityTools;
 
@@ -18,12 +18,12 @@ public class GetFbaShipmentReport {
 		String SellerId = SystemConfig.getSellerId(); //DB取得に変更する
 		String MWSAuthToken = SystemConfig.getMwsAuthToken(); //
 		
-		//Get GeneratedIdList
+		// 未発行のレポートIDを取得する
 		GetFbaShipmentReportDao dao = new GetFbaShipmentReportDao();
 		List<Map<String, AttributeValue>> generatedIdList = new ArrayList<Map<String, AttributeValue>>();
 		generatedIdList = dao.scanGeneratedId(SellerId);
 		
-		//Save Order Info in database
+		// amznサーバから注文情報レポートを取得してDB保存する
 		if (generatedIdList.size()>0) {
 			GetReportSample sample = new GetReportSample();
 			TsvPerser parser = new TsvPerser();

@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.amazonaws.mws.samples.GetReportRequestListSample;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 
 import config.SystemConfig;
 import dataaccess.GetReportRequestListDao;
+import mwssamples.GetReportRequestListSample;
 
 public class GetReportRequestList {
 
