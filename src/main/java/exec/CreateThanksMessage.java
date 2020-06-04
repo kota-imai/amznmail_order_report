@@ -9,6 +9,7 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import config.SystemConfig;
 import dataaccess.CreateMessageDao;
 import dataaccess.GetShipmentInfoDao;
+import dataaccess.SaveThanksMessageDao;
 
 public class CreateThanksMessage {
 
@@ -55,11 +56,12 @@ public class CreateThanksMessage {
 				to = buyer_email;
 				from = "kota.imai@firmimai.biz"; // TODO 送信元アドレスを変更する
 				// メッセージを作成
-				CreateMessageDao dao = new CreateMessageDao();
 				try {
-					dao.saveThanksMessage(amazon_order_id, SELLER_ID, kbn, product_name, quantity_shipped, to, from,
+					// メッセージを保存（MySQL）
+					new SaveThanksMessageDao().saveThanksMessage(amazon_order_id, SELLER_ID, kbn, product_name, quantity_shipped, to, from,
 							estimated_arrival_date);
-					dao.updateThanksCreatedFlg(amazon_order_id);
+					// 生成フラグを更新（DynamoDB）
+					new CreateMessageDao().updateThanksCreatedFlg(amazon_order_id);
 				} catch (Exception e) {
 					e.printStackTrace();
 					System.out.println("***Failed to save messages***");

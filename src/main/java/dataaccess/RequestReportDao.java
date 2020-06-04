@@ -9,15 +9,17 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
 
+import dataaccess.parent.DynamoDbDao;
+
 public class RequestReportDao extends DynamoDbDao {
 
 	public void saveReportId(String requestId, String sellerId, String startDate, String endDate, String submitDate)
 			throws Exception {
-		String tableName = "RequestId";
 		super.init(); // 初期化
+		setTableName("RequestId");
 		try {
 			Map<String, AttributeValue> item = newItem(requestId, sellerId, startDate, endDate, submitDate);
-			PutItemRequest putItemRequest = new PutItemRequest(tableName, item);
+			PutItemRequest putItemRequest = new PutItemRequest(this.getTableName(), item);
 			dynamoDB.putItem(putItemRequest);
 		} catch (AmazonServiceException ase) {
 			super.LoggerAmazonServiceException(ase);
@@ -47,7 +49,6 @@ public class RequestReportDao extends DynamoDbDao {
 		// GeneratedFlgの初期値は0（レポートID未作成状態）
 		int flg = 0;
 		item.put("GeneratedFlg", new AttributeValue().withN(Integer.toString(flg)));
-
 		return item;
 	}
 }

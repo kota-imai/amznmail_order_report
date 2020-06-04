@@ -2,6 +2,7 @@ package dataaccess;
 
 import java.sql.Connection;
 
+
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,25 +11,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import config.MysqlConfig;
+import dataaccess.parent.MySqlDao;
 
-public class SendMessagesDao {
+public class SendMessagesDao extends MySqlDao{
 	
 	// 送信予定メール一覧から当日送信分を検索する
 	public List<Map<String, String>> scanThanksMailList(String sellerid) throws Exception {
 		HashMap<String, String> map = new HashMap<String, String>();
 		List<Map<String, String>> items = new ArrayList<Map<String, String>>();
-		MysqlConfig sqlconf = new MysqlConfig();
-		Connection conn = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		final String SQL = "select * from MailThanks_Vi "
+		final String query = "select * from MailThanks_Vi "
 				+ "where Sent = 0 " // Sentフラグが0 (未送信)
 				+ "AND DATE(ScheduleDateOfDelivery) = DATE(NOW() + INTERVAL 9 HOUR) " // 配信予定日（JST）が当日
 				+ "AND SellerId = '" + sellerid + "'"; // SellerIdがおなじ
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		this.init(); // 初期化MySQL接続用
+		this.setSQL(query); // クエリを設定
 		try {
-			conn = DriverManager.getConnection(sqlconf.URL, sqlconf.USER, sqlconf.PASS);
-			ps = conn.prepareStatement(SQL);
+			conn = DriverManager.getConnection(config.getUrl(), config.getUser(), config.getPass());
+			ps = conn.prepareStatement(this.getSQL());
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				map.clear();
@@ -51,21 +54,23 @@ public class SendMessagesDao {
 	
 	// 送信済みメールのステータスを反転する
 	public void updateSentStatus(String orderId) throws Exception {
-		final String SQL = "update MailThanks "
+		final String query = "update MailThanks "
 				+ "set Sent = 1, " // 1(送信済み)
 				+ "SentTime = (NOW() + INTERVAL 9 HOUR) " // 送信時刻（JST）
 				+ "where OrderId = '" + orderId + "'";
-		MysqlConfig config = new MysqlConfig(); //MySql設定ファイル読み込み
 		Connection conn = null;
 		PreparedStatement ps = null;
+		
+		this.init(); // 初期化MySQL接続用
+		this.setSQL(query); // クエリを設定
 		try {
-			conn = DriverManager.getConnection(config.URL, config.USER, config.PASS);
-			conn.setAutoCommit(false);
-			ps = conn.prepareStatement(SQL);
-			ps.executeUpdate();
+			conn = DriverManager.getConnection(config.getUrl(), config.getUser(), config.getPass());
+			conn.setAutoCommit(false); // 自動コミットしない
+			ps = conn.prepareStatement(this.getSQL());
+			ps.executeUpdate(); // クエリ実行
 			conn.commit();
 		} catch (Exception e) {
-			conn.rollback();
+			conn.rollback(); // 失敗したらロールバック
 			System.out.println("***failed to update sentflg : orderid = " + orderId + " ***");
 		} finally {
 			new Closer().closeConnection(conn, ps); // クローズ処理

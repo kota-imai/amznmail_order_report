@@ -1,4 +1,4 @@
-package dataaccess;
+package dataaccess.parent;
 
 import com.amazonaws.AmazonClientException;
 
@@ -13,7 +13,9 @@ import config.SystemConfig;
 // 初期化式を定義
 public class DynamoDbDao {
 
-	static AmazonDynamoDB dynamoDB;
+	protected static AmazonDynamoDB dynamoDB;
+	
+	private String tableName;
 
 	// 初期化用
 	protected static void init() throws Exception {
@@ -47,5 +49,13 @@ public class DynamoDbDao {
 				+ "a serious internal problem while trying to communicate with AWS, "
 				+ "such as not being able to access the network.");
 		System.out.println("Error Message: " + ace.getMessage());
+	}
+
+	public String getTableName() {
+		return tableName;
+	}
+
+	public void setTableName(String tableName) {
+		this.tableName = tableName;
 	}
 }

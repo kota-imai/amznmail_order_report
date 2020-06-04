@@ -18,6 +18,7 @@ import com.amazonaws.services.dynamodbv2.model.ScanResult;
 import com.amazonaws.services.dynamodbv2.model.UpdateItemRequest;
 import com.amazonaws.services.dynamodbv2.model.UpdateItemResult;
 
+import dataaccess.parent.DynamoDbDao;
 import util.UtilityTools;
 
 public class GetFbaShipmentReportDao extends DynamoDbDao {
@@ -26,8 +27,8 @@ public class GetFbaShipmentReportDao extends DynamoDbDao {
 	public List<Map<String, AttributeValue>> scanGeneratedId(String sellerId) throws Exception {
 		List<Map<String, AttributeValue>> idList = new ArrayList<Map<String, AttributeValue>>();
 		super.init(); // 初期化
+		setTableName("GeneratedId");
 		try {
-			String tableName = "GeneratedId";
 			HashMap<String, Condition> scanFilter = new HashMap<String, Condition>();
 			// 条件1 出品者IDがぉなじ
 			Condition condition1 = new Condition().withComparisonOperator(ComparisonOperator.EQ.toString())
@@ -38,7 +39,7 @@ public class GetFbaShipmentReportDao extends DynamoDbDao {
 			scanFilter.put("SellerId", condition1);
 			scanFilter.put("NotIssued", condition2);
 
-			ScanRequest scanRequest = new ScanRequest(tableName).withScanFilter(scanFilter);
+			ScanRequest scanRequest = new ScanRequest(this.getTableName()).withScanFilter(scanFilter);
 			ScanResult scanResult = dynamoDB.scan(scanRequest);
 
 			idList = scanResult.getItems();
@@ -54,15 +55,15 @@ public class GetFbaShipmentReportDao extends DynamoDbDao {
 	public List<Map<String, AttributeValue>> scanRequestIdWithSellerId(String sellerId) throws Exception {
 		List<Map<String, AttributeValue>> idList = new ArrayList<Map<String, AttributeValue>>();
 		super.init(); // 初期化
+		setTableName("RequestId");
 		try {
 			// アクティブなリクエストIDがあるか検索
-			String tableName = "RequestId";
 			HashMap<String, Condition> scanFilter = new HashMap<String, Condition>();
 			Condition condition = new Condition().withComparisonOperator(ComparisonOperator.EQ.toString())
 					.withAttributeValueList(new AttributeValue(sellerId));
 			scanFilter.put("SellerId", condition);
 
-			ScanRequest scanRequest = new ScanRequest(tableName).withScanFilter(scanFilter);
+			ScanRequest scanRequest = new ScanRequest(this.getTableName()).withScanFilter(scanFilter);
 			ScanResult scanResult = dynamoDB.scan(scanRequest);
 
 			idList = scanResult.getItems();
@@ -76,8 +77,8 @@ public class GetFbaShipmentReportDao extends DynamoDbDao {
 	
 	// 出荷情報を保存する
     public void saveShipmentInfo(String sellerId, List<String[]> items) throws Exception {
-    	String tableName = "Ship";
     	super.init(); // 初期化
+    	setTableName("Ship");
     	try {
     		for (int i = 0 ;i<items.size() ;i++) {
     			String amazon_order_id = null;try{amazon_order_id = items.get(i)[0];} catch(NullPointerException e) {amazon_order_id = "";}
@@ -179,7 +180,7 @@ public class GetFbaShipmentReportDao extends DynamoDbDao {
             			fulfillment_channel,
             			sales_channel,
             			seller_id);
-            	PutItemRequest putItemRequest = new PutItemRequest(tableName, item);
+            	PutItemRequest putItemRequest = new PutItemRequest(this.getTableName(), item);
             	dynamoDB.putItem(putItemRequest);
         	}
 		} catch (AmazonServiceException ase) {
@@ -300,9 +301,8 @@ public class GetFbaShipmentReportDao extends DynamoDbDao {
     // 発行済みフラグを反転する
     public void updateIssuedFlg(String generatedId) throws Exception {
         super.init(); // 初期化
+        setTableName("GeneratedId");
         try {
-            String tableName = "GeneratedId";
-            
             // アイテム更新
             Map<String, AttributeValueUpdate> item = new HashMap<String, AttributeValueUpdate>();
             Map<String, AttributeValue> key = new HashMap<String, AttributeValue>();
@@ -319,7 +319,7 @@ public class GetFbaShipmentReportDao extends DynamoDbDao {
                     .withAction(AttributeAction.PUT)
                     .withValue(new AttributeValue().withS(timeStamp)));
             UpdateItemRequest updateItemRequest = new UpdateItemRequest()
-                .withTableName(tableName)
+                .withTableName(this.getTableName())
                 .withKey(key)
                 .withAttributeUpdates(item);
             UpdateItemResult result = dynamoDB.updateItem(updateItemRequest);

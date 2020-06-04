@@ -21,6 +21,7 @@ import com.amazonaws.services.dynamodbv2.model.ScanResult;
 import com.amazonaws.services.dynamodbv2.model.UpdateItemRequest;
 import com.amazonaws.services.dynamodbv2.model.UpdateItemResult;
 
+import dataaccess.parent.DynamoDbDao;
 import util.UtilityTools;
 
 public class GetReportRequestListDao extends DynamoDbDao {
@@ -28,8 +29,8 @@ public class GetReportRequestListDao extends DynamoDbDao {
 	public List<Map<String, AttributeValue>> scanRequestIdWithSellerId(String sellerId) throws Exception {
 		List<Map<String, AttributeValue>> idList = new ArrayList<Map<String, AttributeValue>>();
 		super.init(); // 初期化
+		setTableName("RequestId");
 		try {
-			String tableName = "RequestId";
 			HashMap<String, Condition> scanFilter = new HashMap<String, Condition>();
 			// 条件1 SellerIdがおなじ
 			Condition condition1 = new Condition().withComparisonOperator(ComparisonOperator.EQ.toString())
@@ -39,7 +40,7 @@ public class GetReportRequestListDao extends DynamoDbDao {
 					.withAttributeValueList(new AttributeValue().withN("0")); 
 			scanFilter.put("SellerId", condition1);
 			scanFilter.put("GeneratedFlg", condition2);
-			ScanRequest scanRequest = new ScanRequest(tableName).withScanFilter(scanFilter);
+			ScanRequest scanRequest = new ScanRequest(this.getTableName()).withScanFilter(scanFilter);
 			ScanResult scanResult = dynamoDB.scan(scanRequest);
 			idList = scanResult.getItems();
 		} catch (AmazonServiceException ase) {
@@ -54,8 +55,8 @@ public class GetReportRequestListDao extends DynamoDbDao {
 	public void saveGeneratedId(List<String> ReportIdList, Map<String, Map<String, String>> map, String sellerId)
 			throws Exception {
 		super.init(); // 初期化
+		setTableName("GeneratedId");
 		try {
-			String tableName = "GeneratedId";
 			for (int i = 0; i < ReportIdList.size(); i++) {
 				// 検索結果を展開
 				String requestId = ReportIdList.get(i);
@@ -70,7 +71,7 @@ public class GetReportRequestListDao extends DynamoDbDao {
 					try {
 						Map<String, AttributeValue> item = newItem(requestId, generatedReportId, sellerId, startDate,
 								endDate);
-						PutItemRequest putItemRequest = new PutItemRequest(tableName, item);
+						PutItemRequest putItemRequest = new PutItemRequest(this.getTableName(), item);
 						dynamoDB.putItem(putItemRequest);
 						System.out.println("Saved in DynamoDB : RequestID = " + generatedReportId);
 						updateGeneratedFlg(requestId); // 作成済みフラグを反転する
@@ -124,12 +125,12 @@ public class GetReportRequestListDao extends DynamoDbDao {
 	// 作成済みフラグを反転する
 	public void updateGeneratedFlg(String ReportRequestId) throws Exception {
 		super.init(); // 初期化
+		setTableName("RequestId");
 		try {
-			String tableName = "RequestId";
 			// update
 			Map<String, AttributeValueUpdate> item = new HashMap<String, AttributeValueUpdate>();
 			Map<String, AttributeValue> key = new HashMap<String, AttributeValue>();
-
+			// レポートID生成済み
 			int already_generated = 1;
 
 			key.put("ReportRequestId", new AttributeValue().withS(ReportRequestId));
@@ -138,7 +139,7 @@ public class GetReportRequestListDao extends DynamoDbDao {
 			String timeStamp = new UtilityTools().getCurrentTimeStamp();
 			item.put("GeneratedTime", new AttributeValueUpdate().withAction(AttributeAction.PUT)
 					.withValue(new AttributeValue().withS(timeStamp)));
-			UpdateItemRequest updateItemRequest = new UpdateItemRequest().withTableName(tableName).withKey(key)
+			UpdateItemRequest updateItemRequest = new UpdateItemRequest().withTableName(this.getTableName()).withKey(key)
 					.withAttributeUpdates(item);
 			UpdateItemResult result = dynamoDB.updateItem(updateItemRequest);
 			System.out.println("Result: " + result);
@@ -153,12 +154,12 @@ public class GetReportRequestListDao extends DynamoDbDao {
 	// データなしの要求IDを削除する
 	public void deleteNoDataRequestId(String ReportRequestId) throws Exception {
 		super.init(); // 初期化
+		setTableName("RequestId");
 		try {
-			String tableName = "RequestId";
 			// delete Item
 			Map<String, AttributeValue> key = new HashMap<String, AttributeValue>();
 			key.put("ReportRequestId", new AttributeValue().withS(ReportRequestId));
-			DeleteItemRequest deleteItemRequest = new DeleteItemRequest().withTableName(tableName).withKey(key);
+			DeleteItemRequest deleteItemRequest = new DeleteItemRequest().withTableName(this.getTableName()).withKey(key);
 			dynamoDB.deleteItem(deleteItemRequest);
 			System.out.println("Result: Item deleted RequestReportId = " + ReportRequestId);
 		} catch (AmazonServiceException ase) {
