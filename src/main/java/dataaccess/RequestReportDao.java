@@ -9,7 +9,7 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
 
-import dataaccess.parent.DynamoDbDao;
+import dataaccess.parents.DynamoDbDao;
 
 public class RequestReportDao extends DynamoDbDao {
 

@@ -16,7 +16,7 @@ import com.amazonaws.services.dynamodbv2.model.ScanRequest;
 import com.amazonaws.services.dynamodbv2.model.ScanResult;
 import com.amazonaws.services.dynamodbv2.model.UpdateItemRequest;
 
-import dataaccess.parent.DynamoDbDao;
+import dataaccess.parents.DynamoDbDao;
 
 public class CreateMessageDao extends DynamoDbDao {
 

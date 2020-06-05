@@ -1,4 +1,4 @@
-package dataaccess.parent;
+package dataaccess.parents;
 
 import config.MysqlConfig;
 

@@ -13,7 +13,7 @@ import com.amazonaws.services.dynamodbv2.model.Condition;
 import com.amazonaws.services.dynamodbv2.model.ScanRequest;
 import com.amazonaws.services.dynamodbv2.model.ScanResult;
 
-import dataaccess.parent.DynamoDbDao;
+import dataaccess.parents.DynamoDbDao;
 
 public class GetShipmentInfoDao extends DynamoDbDao {
 

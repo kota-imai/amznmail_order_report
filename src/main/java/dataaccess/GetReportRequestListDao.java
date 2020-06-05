@@ -21,7 +21,7 @@ import com.amazonaws.services.dynamodbv2.model.ScanResult;
 import com.amazonaws.services.dynamodbv2.model.UpdateItemRequest;
 import com.amazonaws.services.dynamodbv2.model.UpdateItemResult;
 
-import dataaccess.parent.DynamoDbDao;
+import dataaccess.parents.DynamoDbDao;
 import util.UtilityTools;
 
 public class GetReportRequestListDao extends DynamoDbDao {

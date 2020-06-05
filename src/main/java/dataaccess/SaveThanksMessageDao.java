@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLIntegrityConstraintViolationException;
 
-import dataaccess.parent.MySqlDao;
+import dataaccess.parents.MySqlDao;
 
 public class SaveThanksMessageDao extends MySqlDao {
 

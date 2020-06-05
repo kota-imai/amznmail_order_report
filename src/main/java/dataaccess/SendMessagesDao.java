@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import dataaccess.parent.MySqlDao;
+import dataaccess.parents.MySqlDao;
 
 public class SendMessagesDao extends MySqlDao{
 	
@@ -31,7 +31,7 @@ public class SendMessagesDao extends MySqlDao{
 		this.setSQL(query); // クエリを設定
 		try {
 			conn = DriverManager.getConnection(config.getUrl(), config.getUser(), config.getPass());
-			ps = conn.prepareStatement(this.getSQL());
+			ps = conn.prepareStatement(this.getSQL()); // クエリをセット
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				map.clear();
@@ -66,8 +66,8 @@ public class SendMessagesDao extends MySqlDao{
 		try {
 			conn = DriverManager.getConnection(config.getUrl(), config.getUser(), config.getPass());
 			conn.setAutoCommit(false); // 自動コミットしない
-			ps = conn.prepareStatement(this.getSQL());
-			ps.executeUpdate(); // クエリ実行
+			ps = conn.prepareStatement(this.getSQL()); //SQLをセット
+			ps.executeUpdate(); // 更新
 			conn.commit();
 		} catch (Exception e) {
 			conn.rollback(); // 失敗したらロールバック
