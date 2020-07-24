@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,7 +54,7 @@ public class SendMessagesDao extends MySqlDao{
 	}
 	
 	// 送信済みメールのステータスを反転する
-	public void updateSentStatus(String orderId) throws Exception {
+	public void updateSentStatus(String orderId) {
 		final String query = "update MailThanks "
 				+ "set Sent = 1, " // 1(送信済み)
 				+ "SentTime = (NOW() + INTERVAL 9 HOUR) " // 送信時刻（JST）
@@ -70,7 +71,12 @@ public class SendMessagesDao extends MySqlDao{
 			ps.executeUpdate(); // 更新
 			conn.commit();
 		} catch (Exception e) {
-			conn.rollback(); // 失敗したらロールバック
+			try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} // 失敗したらロールバック
 			System.out.println("***failed to update sentflg : orderid = " + orderId + " ***");
 		} finally {
 			new Closer().closeConnection(conn, ps); // クローズ処理

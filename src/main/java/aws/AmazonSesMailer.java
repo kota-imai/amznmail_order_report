@@ -9,37 +9,35 @@ import com.amazonaws.services.simpleemail.model.Body;
 import com.amazonaws.services.simpleemail.model.Content;
 import com.amazonaws.services.simpleemail.model.Destination;
 import com.amazonaws.services.simpleemail.model.Message;
-import com.amazonaws.services.simpleemail.model.SendEmailRequest; 
+import com.amazonaws.services.simpleemail.model.SendEmailRequest;
+
+import mail.ThanksMessage;
 
 // AWSドキュメントSampleコードを引用
 public class AmazonSesMailer {
 
-  final static String FROM = "kota.imai@firmimai.biz"; // 送信元アドレス、必要なら変更
-
-  public void sendMessage(String from, String to, String configset, String subject, String html, String flat)
-		  												throws IOException {
-    try {
-      AmazonSimpleEmailService client = 
-          AmazonSimpleEmailServiceClientBuilder.standard()
-            .withRegion(Regions.AP_SOUTHEAST_2).build(); // Tokyo リージョン
-      SendEmailRequest request = new SendEmailRequest()
-          .withDestination(
-              new Destination().withToAddresses(to))
-          .withMessage(new Message()
-              .withBody(new Body()
-                  .withHtml(new Content()
-                      .withCharset("UTF-8").withData(html))
-                  .withText(new Content()
-                      .withCharset("UTF-8").withData(flat)))
-              .withSubject(new Content()
-                  .withCharset("UTF-8").withData(subject)))
-          .withSource(from)
-          .withConfigurationSetName(configset);
-      client.sendEmail(request);
-      System.out.println("Email sent!");
-    } catch (Exception ex) {
-      System.out.println("The email was not sent. Error message: " 
-          + ex.getMessage());
-    }
-  }
+	public boolean sendMessage(ThanksMessage msg) throws IOException {
+		// 戻り値用（送信成功true, 失敗false
+		boolean rc = true;
+		
+		try {
+			AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
+					.withRegion(Regions.AP_SOUTHEAST_2).build(); // Tokyo リージョン
+			SendEmailRequest request = new SendEmailRequest()
+					.withDestination(
+							new Destination().withToAddresses(msg.getToAddress()))
+					.withMessage(new Message()
+							.withBody(
+									new Body().withHtml(new Content().withCharset("UTF-8").withData(msg.getHtmlText()))
+											.withText(new Content().withCharset("UTF-8").withData(msg.getFlatText())))
+							.withSubject(new Content().withCharset("UTF-8").withData(msg.getSubject())))
+					.withSource(msg.getFromAddress()).withConfigurationSetName(msg.getConfigSet());
+			client.sendEmail(request);
+			System.out.println("Email sent!");
+		} catch (Exception ex) {
+			System.out.println("The email was not sent. Error message: " + ex.getMessage());
+			rc = false;
+		}
+		return rc;
+	}
 }
