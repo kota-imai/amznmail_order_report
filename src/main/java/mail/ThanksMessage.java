@@ -13,6 +13,18 @@ public class ThanksMessage {
 	private String htmlText;
 	// 平文のメッセージ
 	private String flatText;
+	// 注文ID
+	private String orderId;
+	// 出品者ID
+	private String sellerId;
+	// 区分
+	private String kubun;
+	// 商品名
+	private String productName;
+	// 数量
+	private String itemQuantity;
+	// 到着予定日
+	private String arrivalDate;
 	
 	public static ThanksMessage getInstance(){
 		return new ThanksMessage();
@@ -52,5 +64,41 @@ public class ThanksMessage {
 	}
 	public void setFlatText(String flatText) {
 		this.flatText = flatText;
+	}
+	public String getOrderId() {
+		return orderId;
+	}
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+	public String getSellerId() {
+		return sellerId;
+	}
+	public void setSellerId(String sellerId) {
+		this.sellerId = sellerId;
+	}
+	public String getKubun() {
+		return kubun;
+	}
+	public void setKubun(String kubun) {
+		this.kubun = kubun;
+	}
+	public String getProductName() {
+		return productName;
+	}
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+	public String getItemQuantity() {
+		return itemQuantity;
+	}
+	public void setItemQuantity(String itemQuantity) {
+		this.itemQuantity = itemQuantity;
+	}
+	public String getArrivalDate() {
+		return arrivalDate;
+	}
+	public void setArrivalDate(String arrivalDate) {
+		this.arrivalDate = arrivalDate;
 	}
 }

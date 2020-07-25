@@ -15,16 +15,14 @@ public class GetReportRequestList {
 
 	public static void main(String[] args) {
 		GetReportRequestListDao dao = new GetReportRequestListDao();
-		
-		final String SELLER_ID = SystemConfig.getSellerId(); // TODO DB取得に変更する
-		final String MWS_AUTH_TOKEN = SystemConfig.getMwsAuthToken(); //
-		
+		final String sellerId = SystemConfig.getSellerId(); // TODO DB取得に変更する
+		final String mwsToken = SystemConfig.getMwsAuthToken(); //
 		List<String> ReportIdList = new ArrayList<String>();
 		List<Map<String, AttributeValue>> resultmap = new ArrayList<Map<String, AttributeValue>>();
 		
 		// レポートID未発行の要求IDを検索する
 		try {
-			resultmap = dao.scanRequestIdWithSellerId(SELLER_ID);
+			resultmap = dao.scanRequestIdWithSellerId(sellerId);
 			for(int i = 0; i < resultmap.size(); i++) {
 				ReportIdList.add(resultmap.get(i).get("ReportRequestId").getS());
 			}
@@ -42,11 +40,10 @@ public class GetReportRequestList {
 		} else { // 対象のデータがあれば
 			// MWS_APIをコールする
 			GetReportRequestListSample sample = new GetReportRequestListSample();
-			Map<String, Map<String, String>> map = sample.sendRequest(ReportIdList, SELLER_ID, MWS_AUTH_TOKEN);
-			
+			Map<String, Map<String, String>> map = sample.sendRequest(ReportIdList, sellerId, mwsToken);
 			// レポートIDを保存する
 			try {
-				dao.saveGeneratedId(ReportIdList, map, SELLER_ID);
+				dao.saveGeneratedId(ReportIdList, map, sellerId);
 			} catch (Exception e) {
 				System.out.println("***Failed to save generatedIds in DynamoDB***");
 				e.printStackTrace();
