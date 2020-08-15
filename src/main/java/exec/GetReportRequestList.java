@@ -16,7 +16,7 @@ public class GetReportRequestList {
 	public static void main(String[] args) {
 		GetReportRequestListDao dao = new GetReportRequestListDao();
 		final String sellerId = SystemConfig.getSellerId(); // TODO DB取得に変更する
-		final String mwsToken = SystemConfig.getMwsAuthToken(); //
+		final String mwsToken = SystemConfig.getMwsAuthToken();
 		List<String> ReportIdList = new ArrayList<String>();
 		List<Map<String, AttributeValue>> resultmap = new ArrayList<Map<String, AttributeValue>>();
 		
@@ -37,10 +37,10 @@ public class GetReportRequestList {
 		if (ReportIdList.isEmpty()) { // 対象の要求IDがなかったらログ出力して終了
 			System.out.println("There are No requestId in the table");
 			return;
-		} else { // 対象のデータがあれば
-			// MWS_APIをコールする
-			GetReportRequestListSample sample = new GetReportRequestListSample();
-			Map<String, Map<String, String>> map = sample.sendRequest(ReportIdList, sellerId, mwsToken);
+		} else {
+			// 対象のデータがあればMWS_APIをコール
+			Map<String, Map<String, String>> map = new GetReportRequestListSample().sendRequest(ReportIdList, sellerId, mwsToken);
+			
 			// レポートIDを保存する
 			try {
 				dao.saveGeneratedId(ReportIdList, map, sellerId);

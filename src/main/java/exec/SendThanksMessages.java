@@ -33,14 +33,17 @@ public class SendThanksMessages {
 			for (int i = 0; i < mailList.size(); i++) {
 				String orderId = mailList.get(i).get("OrderId");
 				// メールを作成
-				ThanksMessage mail = ThanksMessage.getInstance();
-				mail.setFromAddress(mailList.get(i).get("From_Email"));
-				// mail.setToAddress(mailList.get(i).get("To_Email"));
-				mail.setToAddress("k.ima003365@gmail.com");
-				mail.setSubject(mailList.get(i).get("Subject"));
-				mail.setConfigSet(mailList.get(i).get("ConfigSet"));
-				mail.setHtmlText(mailList.get(i).get("HTML"));
-				mail.setFlatText(mailList.get(i).get("FLAT"));
+				
+				ThanksMessage mail = ThanksMessage.getMsgInstance(
+						mailList.get(i).get("From_Email"), //送信元
+						"k.ima003365@gmail.com", //送信先
+//						mailList.get(i).get("To_Email"),
+						mailList.get(i).get("Subject"), //タイトル
+						mailList.get(i).get("ConfigSet"), //SES設定ファイル
+						mailList.get(i).get("HTML"), //本文HTML
+						mailList.get(i).get("FLAT") //本文原文
+						);
+				
 				try {
 					if (mailer.sendMessage(mail)) { //メッセージ送信
 						dao.updateSentStatus(orderId); //送信済みフラグを更新

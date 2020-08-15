@@ -48,7 +48,7 @@ public class SendMessagesDao extends MySqlDao{
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			new Closer().closeConnection(conn, ps, rs); // クローズ処理追加
+			new Closer().closeConnection(conn, ps, rs); // クローズ処理
 		}
 		return items;
 	}
@@ -64,6 +64,7 @@ public class SendMessagesDao extends MySqlDao{
 		
 		this.init(); // 初期化MySQL接続用
 		this.setSQL(query); // クエリを設定
+		
 		try {
 			conn = DriverManager.getConnection(config.getUrl(), config.getUser(), config.getPass());
 			conn.setAutoCommit(false); // 自動コミットしない
@@ -74,7 +75,6 @@ public class SendMessagesDao extends MySqlDao{
 			try {
 				conn.rollback();
 			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			} // 失敗したらロールバック
 			System.out.println("***failed to update sentflg : orderid = " + orderId + " ***");

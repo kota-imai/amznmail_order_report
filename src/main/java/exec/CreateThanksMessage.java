@@ -39,22 +39,25 @@ public class CreateThanksMessage {
 				// メッセージを作成
 				try {
 					// メッセージを保存
-					ThanksMessage msg = ThanksMessage.getInstance();
-					msg.setOrderId(orderId);
-					msg.setSellerId(sellerId);
-					msg.setProductName(itemList.get(i).get("product_name").getS());
-					msg.setItemQuantity(itemList.get(i).get("quantity_shipped").getS());
-					msg.setToAddress(itemList.get(i).get("buyer_email").getS());
-					msg.setFromAddress("kota.imai@firmimai.biz"); // TODO 送信元アドレスを変更する
-					msg.setArrivalDate(itemList.get(i).get("estimated_arrival_date").getS());
+					ThanksMessage msg = ThanksMessage.getInstance(
+							orderId,
+							sellerId,
+							itemList.get(i).get("product_name").getS(),
+							itemList.get(i).get("quantity_shipped").getS(),
+							itemList.get(i).get("buyer_email").getS(),
+							"kota.imai@firmimai.biz", // TODO 送信元アドレスを変更する
+							itemList.get(i).get("estimated_arrival_date").getS(),
+							"FBAthanks");
 					if ("AFN".contentEquals(fulfillmentChannel)) {
 						msg.setKubun("FBAthanks");
 					} else if ("MFN".contentEquals(fulfillmentChannel)) {
 						msg.setKubun("FBMthanks");
 					}
 					new SaveThanksMessageDao().saveThanksMessage(msg);
-					// 生成フラグを更新（DynamoDB）
+					
+					// メッセージ作成済みフラグを更新
 					new CreateMessageDao().updateThanksCreatedFlg(orderId);
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 					System.out.println("***Failed to save messages***");

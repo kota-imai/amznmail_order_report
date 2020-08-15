@@ -26,57 +26,92 @@ public class ThanksMessage {
 	// 到着予定日
 	private String arrivalDate;
 	
-	public static ThanksMessage getInstance(){
-		return new ThanksMessage();
+	public static ThanksMessage getInstance(
+			String orderId,
+			String sellerId,
+			String productName,
+			String itemQuantity,
+			String toAddress,
+			String fromAddress,
+			String arrivalDate,
+			String kubun
+			){
+		ThanksMessage msg = new ThanksMessage();
+		msg.orderId = orderId;
+		msg.sellerId = sellerId;
+		msg.productName = productName;
+		msg.itemQuantity = itemQuantity;
+		msg.toAddress = toAddress;
+		msg.fromAddress = fromAddress;
+		msg.arrivalDate = arrivalDate;
+		msg.kubun = kubun;
+		return msg;
 	}
+	
+	public static ThanksMessage getMsgInstance(
+			String fromAddress,
+			String toAddress,
+			String subject,
+			String configSet,
+			String htmlBody,
+			String textBody) {
+		ThanksMessage msg = new ThanksMessage();
+		msg.fromAddress = fromAddress;
+		msg.toAddress = toAddress;
+		msg.subject = subject;
+		msg.htmlText = htmlBody;
+		msg.flatText = textBody;
+		return msg;
+	}
+	
 	public String getFromAddress() {
 		return fromAddress;
 	}
-	public void setFromAddress(String fromAddress) {
-		this.fromAddress = fromAddress;
-	}
+//	public void setFromAddress(String fromAddress) {
+//		this.fromAddress = fromAddress;
+//	}
 	public String getToAddress() {
 		return toAddress;
 	}
-	public void setToAddress(String toAddress) {
-		this.toAddress = toAddress;
-	}
+//	public void setToAddress(String toAddress) {
+//		this.toAddress = toAddress;
+//	}
 	public String getConfigSet() {
 		return configSet;
 	}
-	public void setConfigSet(String configSet) {
-		this.configSet = configSet;
-	}
+//	public void setConfigSet(String configSet) {
+//		this.configSet = configSet;
+//	}
 	public String getSubject() {
 		return subject;
 	}
-	public void setSubject(String subject) {
-		this.subject = subject;
-	}
+//	public void setSubject(String subject) {
+//		this.subject = subject;
+//	}
 	public String getHtmlText() {
 		return htmlText;
 	}
-	public void setHtmlText(String htmlText) {
-		this.htmlText = htmlText;
-	}
+//	public void setHtmlText(String htmlText) {
+//		this.htmlText = htmlText;
+//	}
 	public String getFlatText() {
 		return flatText;
 	}
-	public void setFlatText(String flatText) {
-		this.flatText = flatText;
-	}
+//	public void setFlatText(String flatText) {
+//		this.flatText = flatText;
+//	}
 	public String getOrderId() {
 		return orderId;
 	}
-	public void setOrderId(String orderId) {
-		this.orderId = orderId;
-	}
+//	public void setOrderId(String orderId) {
+//		this.orderId = orderId;
+//	}
 	public String getSellerId() {
 		return sellerId;
 	}
-	public void setSellerId(String sellerId) {
-		this.sellerId = sellerId;
-	}
+//	public void setSellerId(String sellerId) {
+//		this.sellerId = sellerId;
+//	}
 	public String getKubun() {
 		return kubun;
 	}
@@ -86,19 +121,19 @@ public class ThanksMessage {
 	public String getProductName() {
 		return productName;
 	}
-	public void setProductName(String productName) {
-		this.productName = productName;
-	}
+//	public void setProductName(String productName) {
+//		this.productName = productName;
+//	}
 	public String getItemQuantity() {
 		return itemQuantity;
 	}
-	public void setItemQuantity(String itemQuantity) {
-		this.itemQuantity = itemQuantity;
-	}
+//	public void setItemQuantity(String itemQuantity) {
+//		this.itemQuantity = itemQuantity;
+//	}
 	public String getArrivalDate() {
 		return arrivalDate;
 	}
-	public void setArrivalDate(String arrivalDate) {
-		this.arrivalDate = arrivalDate;
-	}
+//	public void setArrivalDate(String arrivalDate) {
+//		this.arrivalDate = arrivalDate;
+//	}
 }

@@ -15,8 +15,8 @@ import util.UtilityTools;
 public class GetFbaShipmentReport {
 
 	public static void main(String[] args) throws Exception {
-		String sellerId = SystemConfig.getSellerId(); //DB取得に変更する
-		String mwsToken = SystemConfig.getMwsAuthToken(); //
+		String sellerId = SystemConfig.getSellerId(); 
+		String mwsToken = SystemConfig.getMwsAuthToken(); 
 		
 		// 未発行のレポートIDを取得する
 		GetFbaShipmentReportDao dao = new GetFbaShipmentReportDao();
@@ -27,8 +27,10 @@ public class GetFbaShipmentReport {
 		if (generatedIdList.size()>0) {
 			GetReportSample sample = new GetReportSample();
 			TsvPerser parser = new TsvPerser();
+			
 			for (int i = 0 ;i<generatedIdList.size() ;i++) {
-				String generatedReportId = generatedIdList.get(i).get("GeneratedReportId").getS();//generatedId取得
+				// 有効なgeneratedId取得
+				String generatedReportId = generatedIdList.get(i).get("GeneratedReportId").getS();
 				List<String[]> itemList = null;
 				try {
 					itemList = parser.parse(sample.sendRequest(sellerId, mwsToken, generatedReportId));
@@ -37,16 +39,22 @@ public class GetFbaShipmentReport {
 					e.printStackTrace();
 					return;
 				}
+				
+				// 出荷済み情報としてデータベースに登録
 				try {
 					dao.saveShipmentInfo(sellerId, itemList);
+					
 				} catch (Exception e) {
 					System.out.println("***Failed to store data in DB*** generatedId:" + generatedReportId);
 					e.printStackTrace();
 					return;
 				}
+				
+				// 出荷情報発行済みフラグを更新
 				dao.updateIssuedFlg(generatedReportId);
 			}
 		} else {
+			// データが無かったら
 			System.out.println("NO REPORT ARE THERE TO ISSUE");
 			System.out.println("            TimeStamp : " + new UtilityTools().getCurrentTimeStamp());
 		}
