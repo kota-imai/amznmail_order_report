@@ -58,8 +58,13 @@ amazonサーバーから注文情報を取得して購入者のメールアド�
 
 ## Demo
 
-購入者にはこのようなメールが送信されます
+１．Webアプリからお礼メールのテンプレートを作成し、送信日を設定します。
+![image-20201024112534530](https://user-images.githubusercontent.com/56163213/97066050-daaa6f80-15ec-11eb-8b99-643eb45ccd8c.png)
 
+２．MWSアカウント連携すると自動で注文情報が取り込まれます。送信対象外のアイテムは送信予定トレイから削除してください。
+![image-20201024112805189](https://user-images.githubusercontent.com/56163213/97066082-337a0800-15ed-11eb-8e26-fb8a36555bad.png)
+
+３．設定した送信日にお礼メールが送信されます。購入者にはこのようなメールが届きます。
 <img src="https://maidomail9publicbucket.s3-ap-northeast-1.amazonaws.com/maidomail_demo.png" style="zoom:40%;" />
 
 
